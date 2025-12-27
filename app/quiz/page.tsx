@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Heart, ArrowLeft, ArrowRight, Check } from 'lucide-react'
+import { HeartIcon, ArrowLeftIcon, ArrowRightIcon, CheckIcon } from '@/components/icons'
 import { useRouter } from 'next/navigation'
 import { tests } from '@/data/tests'
 import { UserResponse, TestResult } from '@/types'
@@ -204,7 +204,7 @@ export default function QuizPage() {
       <header className="w-full py-4 px-4 border-b border-gray-100 sticky top-0 bg-white z-10">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-3">
-            <Heart className="w-5 h-5 text-pink-500" fill="currentColor" />
+            <HeartIcon className="w-5 h-5 text-pink-500" />
             <span className="text-sm font-medium text-gray-600">
               {currentGlobalQuestionNumber} de {totalQuestions}
             </span>
@@ -277,7 +277,7 @@ export default function QuizPage() {
                           : 'border-gray-300'
                       }`}>
                         {selectedAnswer === option.label ? (
-                          <Check className="w-5 h-5 text-white" />
+                          <CheckIcon className="w-5 h-5 text-white" />
                         ) : (
                           <span className="text-sm font-medium text-gray-600">{option.label}</span>
                         )}

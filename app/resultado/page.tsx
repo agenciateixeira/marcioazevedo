@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Heart, Download, Share2, CheckCircle, AlertCircle, TrendingUp, Home } from 'lucide-react'
+import { HeartIcon, DownloadIcon, Share2Icon, CheckCircleIcon, AlertCircleIcon, TrendingUpIcon, HomeIcon } from '@/components/icons'
 import { useRouter } from 'next/navigation'
 
 interface Results {
@@ -48,7 +48,7 @@ export default function ResultadoPage() {
     critical: {
       title: 'Atenção Necessária',
       color: 'red',
-      icon: AlertCircle,
+      icon: AlertCircleIcon,
       gradient: 'from-red-400 to-red-600',
       bg: 'bg-red-50',
       text: 'text-red-700',
@@ -57,7 +57,7 @@ export default function ResultadoPage() {
     moderate: {
       title: 'Desenvolvimento Necessário',
       color: 'orange',
-      icon: TrendingUp,
+      icon: TrendingUpIcon,
       gradient: 'from-orange-400 to-orange-600',
       bg: 'bg-orange-50',
       text: 'text-orange-700',
@@ -66,7 +66,7 @@ export default function ResultadoPage() {
     good: {
       title: 'Boa Saúde Emocional',
       color: 'blue',
-      icon: CheckCircle,
+      icon: CheckCircleIcon,
       gradient: 'from-blue-400 to-blue-600',
       bg: 'bg-blue-50',
       text: 'text-blue-700',
@@ -75,7 +75,7 @@ export default function ResultadoPage() {
     excellent: {
       title: 'Excelente Saúde Emocional',
       color: 'green',
-      icon: CheckCircle,
+      icon: CheckCircleIcon,
       gradient: 'from-green-400 to-green-600',
       bg: 'bg-green-50',
       text: 'text-green-700',
@@ -106,7 +106,7 @@ export default function ResultadoPage() {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center justify-center gap-2"
           >
-            <Heart className="w-6 h-6 text-pink-500" fill="currentColor" />
+            <HeartIcon className="w-6 h-6 text-pink-500" />
             <h1 className="text-2xl font-bold text-gray-800">Seus Resultados</h1>
           </motion.div>
         </div>
@@ -210,7 +210,7 @@ export default function ResultadoPage() {
                 }}
                 className="bg-white text-pink-600 font-semibold py-4 px-8 rounded-xl hover:bg-gray-50 transition-all transform hover:scale-105 inline-flex items-center gap-2"
               >
-                <Heart className="w-5 h-5" />
+                <HeartIcon className="w-5 h-5" />
                 Agendar Sessão
               </button>
             </motion.div>
@@ -227,7 +227,7 @@ export default function ResultadoPage() {
               onClick={() => router.push('/')}
               className="flex items-center justify-center gap-2 px-6 py-3 border-2 border-gray-200 rounded-xl hover:border-pink-500 hover:text-pink-600 transition-colors"
             >
-              <Home className="w-5 h-5" />
+              <HomeIcon className="w-5 h-5" />
               Voltar ao Início
             </button>
 
@@ -235,7 +235,7 @@ export default function ResultadoPage() {
               onClick={handleShare}
               className="flex items-center justify-center gap-2 px-6 py-3 bg-pink-500 text-white rounded-xl hover:bg-pink-600 transition-colors"
             >
-              <Share2 className="w-5 h-5" />
+              <Share2Icon className="w-5 h-5" />
               Compartilhar
             </button>
           </motion.div>
