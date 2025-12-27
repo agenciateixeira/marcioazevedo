@@ -341,7 +341,7 @@ export default function QuizPage() {
         <div className="max-w-2xl w-full">
           <AnimatePresence mode="wait">
             <motion.div
-              key={`${currentTestIndex}-${currentQuestionIndex}`}
+              key={`${currentPhase}-${currentQuestionIndex}`}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
