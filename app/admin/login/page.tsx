@@ -17,19 +17,36 @@ export default function AdminLoginPage() {
     setError('')
     setIsLoading(true)
 
-    // TODO: Integrar com Supabase Auth quando configurar
-    // Por enquanto, autenticação simples (SUBSTITUIR EM PRODUÇÃO!)
-    const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@example.com'
-    const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin123'
+    try {
+      // Chamar API segura de login
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      })
 
-    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-      // Salvar sessão
+      const data = await response.json()
+
+      if (!response.ok || !data.success) {
+        setError(data.error || 'Email ou senha incorretos')
+        setIsLoading(false)
+        return
+      }
+
+      // Login bem-sucedido - salvar sessão
       localStorage.setItem('admin_authenticated', 'true')
-      localStorage.setItem('admin_email', email)
+      localStorage.setItem('admin_email', data.user.email)
+      localStorage.setItem('admin_user_id', data.user.id)
+      localStorage.setItem('admin_full_name', data.user.fullName)
+      localStorage.setItem('admin_role', data.user.role)
 
+      // Redirecionar para dashboard
       router.push('/admin/dashboard')
-    } else {
-      setError('Email ou senha incorretos')
+    } catch (error) {
+      console.error('Erro ao fazer login:', error)
+      setError('Erro ao conectar com o servidor. Tente novamente.')
       setIsLoading(false)
     }
   }
