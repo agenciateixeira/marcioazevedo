@@ -246,7 +246,7 @@ export default function ResultadoPage() {
       <footer className="py-8 px-4 border-t border-gray-100">
         <div className="max-w-3xl mx-auto text-center">
           <p className="text-sm text-gray-500">
-            © 2024 Saúde Emocional. Todos os direitos reservados.
+            © 2026 Saúde Emocional. Todos os direitos reservados.
           </p>
         </div>
       </footer>
