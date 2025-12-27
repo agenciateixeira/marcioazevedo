@@ -327,7 +327,7 @@ export default function LandingPage() {
                 ) : (
                   <>
                     <ZapIcon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-                    <span className="leading-tight">QUERO DESCOBRIR MEUS PADRÕES AGORA</span>
+                    <span className="leading-tight">QUERO INICIAR MEU TESTE AGORA</span>
                     <ArrowRightIcon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
                   </>
                 )}
