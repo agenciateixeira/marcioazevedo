@@ -3,7 +3,36 @@
 -- Plataforma de Avaliação de Saúde Emocional
 -- ============================================
 
--- 1. Tabela de Respostas dos Testes
+-- 1. Tabela de Leads (captura inicial)
+CREATE TABLE IF NOT EXISTS leads (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+
+  -- Dados do lead
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+
+  -- Controle de progresso
+  started_quiz BOOLEAN DEFAULT FALSE,
+  completed_quiz BOOLEAN DEFAULT FALSE,
+  viewed_checkout BOOLEAN DEFAULT FALSE,
+
+  -- Dados de origem/tracking
+  utm_source TEXT,
+  utm_medium TEXT,
+  utm_campaign TEXT,
+  utm_term TEXT,
+  utm_content TEXT,
+  referrer TEXT,
+  ip_address TEXT,
+  user_agent TEXT,
+
+  -- Controle de duplicação
+  CONSTRAINT unique_email UNIQUE(email)
+);
+
+-- 2. Tabela de Respostas dos Testes
 CREATE TABLE IF NOT EXISTS responses (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -42,6 +71,15 @@ CREATE TABLE IF NOT EXISTS responses (
 );
 
 -- 2. Criar Índices para Performance
+
+-- Índices para Leads
+CREATE INDEX IF NOT EXISTS idx_leads_email ON leads(email);
+CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_leads_started_quiz ON leads(started_quiz);
+CREATE INDEX IF NOT EXISTS idx_leads_completed_quiz ON leads(completed_quiz);
+CREATE INDEX IF NOT EXISTS idx_leads_utm_campaign ON leads(utm_campaign);
+
+-- Índices para Responses
 CREATE INDEX IF NOT EXISTS idx_responses_email ON responses(email);
 CREATE INDEX IF NOT EXISTS idx_responses_created_at ON responses(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_responses_health_level ON responses(health_level);
