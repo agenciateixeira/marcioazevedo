@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { HeartIcon, Share2Icon, CheckCircleIcon, AlertCircleIcon, TrendingUpIcon, HomeIcon, SparklesIcon, ArrowRightIcon } from '@/components/icons'
 import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 
 interface Results {
   name: string
@@ -26,9 +27,68 @@ export default function ResultadoPage() {
   const [isUnlocked, setIsUnlocked] = useState(false)
 
   useEffect(() => {
+    loadResults()
+  }, [router])
+
+  const loadResults = async () => {
     const savedResults = localStorage.getItem('testResults')
     const paymentApproved = localStorage.getItem('payment_approved')
+    const userEmail = localStorage.getItem('userEmail')
 
+    // Se tem no localStorage e pagou, usa direto
+    if (savedResults && paymentApproved === 'true') {
+      setIsUnlocked(true)
+      const parsedResults: Results = JSON.parse(savedResults)
+      setResults(parsedResults)
+      const score = Math.round((parsedResults.percentage / 100) * 10 * 10) / 10
+      setScoreOutOf10(score)
+      setTimeout(() => setShowAnalysis(true), 1000)
+      return
+    }
+
+    // Se não tem no localStorage mas tem email, busca do banco
+    if (!savedResults && userEmail) {
+      try {
+        const { data, error } = await supabase
+          .from('responses')
+          .select('*')
+          .eq('email', userEmail)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single()
+
+        if (data && !error) {
+          // Verificar se pagamento foi aprovado
+          if (data.payment_status !== 'approved') {
+            router.push('/checkout')
+            return
+          }
+
+          setIsUnlocked(true)
+          const resultsFromDB: Results = {
+            name: data.name,
+            email: data.email,
+            test1Score: data.test_1_score,
+            test2Score: data.test_2_score,
+            test3Score: data.test_3_score,
+            totalScore: data.total_score,
+            maxScore: 315, // 3 testes x 21 questões x 5 pontos
+            percentage: (data.total_score / 315) * 100,
+            healthLevel: data.health_level,
+            analysis: data.analysis
+          }
+          setResults(resultsFromDB)
+          const score = Math.round((resultsFromDB.percentage / 100) * 10 * 10) / 10
+          setScoreOutOf10(score)
+          setTimeout(() => setShowAnalysis(true), 1000)
+          return
+        }
+      } catch (error) {
+        console.error('Erro ao buscar resultado:', error)
+      }
+    }
+
+    // Se não tem nada, redireciona
     if (!savedResults) {
       router.push('/')
       return
@@ -36,24 +96,11 @@ export default function ResultadoPage() {
 
     // Verificar se pagamento foi aprovado
     if (paymentApproved !== 'true') {
-      // Se não pagou, redirecionar para checkout
       router.push('/checkout')
       return
     }
 
-    setIsUnlocked(true)
-    const parsedResults: Results = JSON.parse(savedResults)
-    setResults(parsedResults)
-
-    // Calcular nota de 0 a 10
-    const score = Math.round((parsedResults.percentage / 100) * 10 * 10) / 10
-    setScoreOutOf10(score)
-
-    // Mostrar análise após animação do gauge
-    setTimeout(() => {
-      setShowAnalysis(true)
-    }, 2500)
-  }, [router])
+  }
 
   if (!results || !isUnlocked) {
     return null

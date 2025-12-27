@@ -257,6 +257,12 @@ CREATE POLICY "Public can insert responses"
   TO anon
   WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Public can read responses" ON responses;
+CREATE POLICY "Public can read responses"
+  ON responses FOR SELECT
+  TO anon, authenticated
+  USING (true);
+
 DROP POLICY IF EXISTS "Service role can read responses" ON responses;
 CREATE POLICY "Service role can read responses"
   ON responses FOR SELECT
