@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { HeartIcon, ArrowLeftIcon, ArrowRightIcon, CheckIcon } from '@/components/icons'
+import { HeartIcon, ArrowLeftIcon, ArrowRightIcon, CheckIcon, SparklesIcon } from '@/components/icons'
 import { useRouter } from 'next/navigation'
 import { tests } from '@/data/tests'
 import { UserResponse, TestResult } from '@/types'
@@ -10,7 +10,7 @@ import { supabase } from '@/lib/supabase'
 
 export default function QuizPage() {
   const router = useRouter()
-  const [currentTestIndex, setCurrentTestIndex] = useState(0)
+  const [currentPhase, setCurrentPhase] = useState(0) // 0, 1, 2 (3 fases)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [responses, setResponses] = useState<{
     test1: UserResponse[]
@@ -23,7 +23,42 @@ export default function QuizPage() {
   })
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const [showPhaseTransition, setShowPhaseTransition] = useState(false)
   const [userName, setUserName] = useState('')
+
+  // Estrutura das fases
+  const phases = [
+    {
+      id: 1,
+      title: 'Fase 1 de 3',
+      subtitle: 'Sua Relação com a Figura Paterna',
+      emoji: '👨',
+      description: 'Como o seu pai moldou suas expectativas e escolhas amorosas',
+      completionMessage: 'Você completou a análise da sua relação com a figura paterna!',
+      test: tests[0]
+    },
+    {
+      id: 2,
+      title: 'Fase 2 de 3',
+      subtitle: 'Sua Relação com a Figura Materna',
+      emoji: '👩',
+      description: 'Como sua mãe influenciou sua capacidade de intimidade e auto-cuidado',
+      completionMessage: 'Você completou a análise da sua relação com a figura materna!',
+      test: tests[1]
+    },
+    {
+      id: 3,
+      title: 'Fase 3 de 3',
+      subtitle: 'Sua Sexualidade e Afetividade',
+      emoji: '💕',
+      description: 'Como suas fases psicossexuais afetam sua intimidade hoje',
+      completionMessage: 'Parabéns! Você completou toda a avaliação emocional!',
+      test: tests[2]
+    }
+  ]
+
+  const currentPhaseData = phases[currentPhase]
+  const currentTest = currentPhaseData.test
 
   useEffect(() => {
     // Verificar se o usuário já forneceu os dados
@@ -38,14 +73,17 @@ export default function QuizPage() {
     setUserName(name)
   }, [router])
 
-  const currentTest = tests[currentTestIndex]
   const currentQuestion = currentTest.questions[currentQuestionIndex]
   const totalQuestions = tests.reduce((sum, test) => sum + test.questions.length, 0)
-  const currentGlobalQuestionNumber =
-    tests.slice(0, currentTestIndex).reduce((sum, test) => sum + test.questions.length, 0) +
-    currentQuestionIndex +
-    1
 
+  // Progresso dentro da fase atual
+  const phaseProgress = ((currentQuestionIndex + 1) / currentTest.questions.length) * 100
+
+  // Progresso global (considerando todas as 3 fases)
+  const questionsCompletedBeforePhase = phases.slice(0, currentPhase).reduce((sum, phase) =>
+    sum + phase.test.questions.length, 0
+  )
+  const currentGlobalQuestionNumber = questionsCompletedBeforePhase + currentQuestionIndex + 1
   const progressPercentage = (currentGlobalQuestionNumber / totalQuestions) * 100
 
   const handleAnswer = (optionLabel: string, score: number) => {
@@ -59,7 +97,7 @@ export default function QuizPage() {
     }
 
     // Atualizar respostas
-    const testKey = `test${currentTestIndex + 1}` as 'test1' | 'test2' | 'test3'
+    const testKey = `test${currentPhase + 1}` as 'test1' | 'test2' | 'test3'
     setResponses(prev => ({
       ...prev,
       [testKey]: [...prev[testKey], response]
@@ -75,23 +113,31 @@ export default function QuizPage() {
     setIsTransitioning(true)
 
     setTimeout(() => {
-      // Se ainda há perguntas no teste atual
+      // Se ainda há perguntas na fase atual
       if (currentQuestionIndex < currentTest.questions.length - 1) {
         setCurrentQuestionIndex(prev => prev + 1)
+        setSelectedAnswer(null)
+        setIsTransitioning(false)
       }
-      // Se acabou o teste atual mas há mais testes
-      else if (currentTestIndex < tests.length - 1) {
-        setCurrentTestIndex(prev => prev + 1)
-        setCurrentQuestionIndex(0)
+      // Se acabou a fase atual mas há mais fases
+      else if (currentPhase < phases.length - 1) {
+        // Mostrar tela de transição de fase
+        setShowPhaseTransition(true)
+        setIsTransitioning(false)
+
+        // Após 3 segundos, ir para próxima fase
+        setTimeout(() => {
+          setShowPhaseTransition(false)
+          setCurrentPhase(prev => prev + 1)
+          setCurrentQuestionIndex(0)
+          setSelectedAnswer(null)
+        }, 3000)
       }
-      // Se acabaram todos os testes
+      // Se acabaram todas as fases
       else {
         submitResults()
         return
       }
-
-      setSelectedAnswer(null)
-      setIsTransitioning(false)
     }, 300)
   }
 
@@ -198,24 +244,94 @@ export default function QuizPage() {
     return null
   }
 
+  // Tela de transição entre fases
+  if (showPhaseTransition) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-white flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center max-w-md"
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            className="inline-block mb-6"
+          >
+            <SparklesIcon className="w-16 h-16 text-pink-500" />
+          </motion.div>
+
+          <div className="text-6xl mb-4">{phases[currentPhase].emoji}</div>
+
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">
+            {phases[currentPhase].completionMessage}
+          </h2>
+
+          <p className="text-gray-600 mb-6">
+            Analisando suas respostas...
+          </p>
+
+          <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+            <motion.div
+              className="h-full bg-gradient-to-r from-pink-400 to-pink-600"
+              initial={{ width: "0%" }}
+              animate={{ width: "100%" }}
+              transition={{ duration: 3 }}
+            />
+          </div>
+
+          <p className="text-sm text-gray-500 mt-4">
+            Preparando {phases[currentPhase + 1]?.subtitle}...
+          </p>
+        </motion.div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header with Progress */}
       <header className="w-full py-4 px-4 border-b border-gray-100 sticky top-0 bg-white z-10">
         <div className="max-w-2xl mx-auto">
-          <div className="flex items-center justify-between mb-3">
-            <HeartIcon className="w-5 h-5 text-pink-500" />
-            <span className="text-sm font-medium text-gray-600">
-              {currentGlobalQuestionNumber} de {totalQuestions}
-            </span>
+          {/* Fase atual */}
+          <div className="text-center mb-3">
+            <div className="inline-flex items-center gap-2 bg-pink-50 px-3 py-1 rounded-full mb-2">
+              <span className="text-2xl">{currentPhaseData.emoji}</span>
+              <span className="text-xs font-bold text-pink-700">
+                {currentPhaseData.title}
+              </span>
+            </div>
+            <p className="text-sm font-medium text-gray-700">
+              {currentPhaseData.subtitle}
+            </p>
           </div>
-          <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-gradient-to-r from-pink-400 to-pink-600"
-              initial={{ width: 0 }}
-              animate={{ width: `${progressPercentage}%` }}
-              transition={{ duration: 0.3 }}
-            />
+
+          {/* Progresso da fase */}
+          <div className="mb-2">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs text-gray-500">
+                Pergunta {currentQuestionIndex + 1} de {currentTest.questions.length}
+              </span>
+              <span className="text-xs font-medium text-gray-600">
+                {Math.round(phaseProgress)}%
+              </span>
+            </div>
+            <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-gradient-to-r from-pink-400 to-pink-600"
+                initial={{ width: 0 }}
+                animate={{ width: `${phaseProgress}%` }}
+                transition={{ duration: 0.3 }}
+              />
+            </div>
+          </div>
+
+          {/* Progresso global */}
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-400">
+              Progresso Total: {currentGlobalQuestionNumber} de {totalQuestions}
+            </span>
+            <HeartIcon className="w-4 h-4 text-pink-500" />
           </div>
         </div>
       </header>
@@ -231,28 +347,20 @@ export default function QuizPage() {
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.3 }}
             >
-              {/* Test Info */}
-              <div className="mb-8 text-center">
-                <div className="inline-flex items-center gap-2 bg-pink-50 px-4 py-2 rounded-full mb-4">
-                  <span className="text-sm font-medium text-pink-700">
-                    {currentTest.title} - {currentTest.subtitle}
-                  </span>
-                </div>
-                {currentQuestionIndex === 0 && (
-                  <p className="text-gray-600 text-sm italic">
-                    {currentTest.description}
+              {/* Descrição da fase (apenas na primeira pergunta) */}
+              {currentQuestionIndex === 0 && (
+                <div className="mb-8 text-center">
+                  <p className="text-gray-600 text-sm sm:text-base italic max-w-xl mx-auto">
+                    {currentPhaseData.description}
                   </p>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Question */}
               <div className="mb-8">
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 leading-tight mb-2">
                   {currentQuestion.text}
                 </h2>
-                <p className="text-xs sm:text-sm text-gray-500">
-                  Pergunta {currentQuestionIndex + 1} de {currentTest.questions.length}
-                </p>
               </div>
 
               {/* Options */}

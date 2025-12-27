@@ -51,7 +51,7 @@ export default function LandingPage() {
             className="flex items-center justify-center gap-2"
           >
             <HeartIcon className="w-7 h-7 text-pink-500" />
-            <h1 className="text-xl md:text-2xl font-bold text-gray-800">Transformação Emocional</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-800">Teste Para Mulheres Esgotadas</h1>
           </motion.div>
         </div>
       </header>
@@ -74,10 +74,11 @@ export default function LandingPage() {
             </div>
 
             <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight px-2 sm:px-4">
-              Por que você continua repetindo os mesmos padrões no seu relacionamento?
+              Teste Para Mulheres Esgotadas no Relacionamento
             </h2>
 
             <p className="text-base sm:text-lg md:text-xl text-gray-700 mb-8 max-w-3xl mx-auto leading-relaxed px-2">
+              <span className="block font-bold text-2xl sm:text-3xl text-pink-600 mb-3">Descubra em 7 Minutos Por Que Você Repete os Mesmos Padrões</span>
               Se você sente que está <span className="font-semibold text-pink-600">emocionalmente esgotada</span>, vivendo ciclos que parecem nunca acabar, e seu relacionamento está longe do que você sempre sonhou...
               <span className="block mt-3 font-semibold">A resposta está na sua história.</span>
             </p>
