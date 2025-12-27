@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Saúde Emocional no Relacionamento
 
-## Getting Started
+Plataforma de avaliação de saúde emocional para mulheres baseada em psicanálise freudiana.
 
-First, run the development server:
+## Sobre o Projeto
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Este projeto oferece uma avaliação completa de saúde emocional através de 3 testes principais:
+
+1. **Teste 1: Relação com o Pai** - 21 perguntas sobre como a figura paterna influencia os relacionamentos atuais
+2. **Teste 2: Relação com a Mãe** - 21 perguntas sobre formação emocional primária e vínculos afetivos
+3. **Teste 3: Sexualidade** - 21 perguntas sobre desenvolvimento sexual e intimidade emocional
+
+## Tecnologias Utilizadas
+
+- **Next.js 14** - Framework React com App Router
+- **TypeScript** - Tipagem estática
+- **Tailwind CSS** - Estilização
+- **Framer Motion** - Animações
+- **Supabase** - Banco de dados e backend
+- **Lucide React** - Ícones
+
+## Estrutura do Projeto
+
+```
+├── app/
+│   ├── page.tsx          # Landing page
+│   ├── quiz/
+│   │   └── page.tsx      # Página do quiz
+│   └── resultado/
+│       └── page.tsx      # Página de resultados
+├── data/
+│   └── tests.ts          # Dados dos testes
+├── lib/
+│   └── supabase.ts       # Configuração Supabase
+└── types/
+    └── index.ts          # Tipos TypeScript
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Configuração
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Variáveis de Ambiente
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Crie um arquivo `.env.local` na raiz do projeto:
 
-## Learn More
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Banco de Dados Supabase
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Execute o script SQL em `supabase-schema.sql` no editor SQL do Supabase para criar a tabela necessária.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Como Executar
 
-## Deploy on Vercel
+```bash
+# Instalar dependências
+npm install
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Executar em desenvolvimento
+npm run dev
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Build para produção
+npm run build
+
+# Iniciar produção
+npm start
+```
+
+Abra [http://localhost:3000](http://localhost:3000) no navegador.
+
+## Deploy
+
+Este projeto está configurado para deploy na Vercel. Basta conectar o repositório GitHub à Vercel e configurar as variáveis de ambiente.
+
+## Licença
+
+© 2024 Saúde Emocional. Todos os direitos reservados.
