@@ -6,6 +6,13 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!supabaseAdmin) {
+      return NextResponse.json(
+        { error: 'Supabase admin não configurado' },
+        { status: 500 }
+      )
+    }
+
     const { id } = await params
 
     const { data, error } = await supabaseAdmin

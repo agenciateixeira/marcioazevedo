@@ -3,6 +3,13 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 
 export async function GET(request: NextRequest) {
   try {
+    if (!supabaseAdmin) {
+      return NextResponse.json(
+        { error: 'Supabase admin não configurado' },
+        { status: 500 }
+      )
+    }
+
     const { data, error } = await supabaseAdmin
       .from('responses')
       .select('*')
