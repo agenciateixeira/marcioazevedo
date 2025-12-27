@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { HeartIcon, ArrowLeftIcon, DownloadIcon, CheckCircleIcon } from '@/components/icons'
-import { useRouter, useParams } from 'next/navigation'
+import { ArrowLeftIcon, DownloadIcon, CheckCircleIcon } from '@/components/icons'
+import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import AdminLayout from '@/components/AdminLayout'
 
 interface FullResponse {
   id: string
@@ -28,22 +29,15 @@ interface FullResponse {
 }
 
 export default function AdminRelatorioPage() {
-  const router = useRouter()
   const params = useParams()
   const [response, setResponse] = useState<FullResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const isAuth = localStorage.getItem('admin_authenticated')
-    if (isAuth !== 'true') {
-      router.push('/admin/login')
-      return
-    }
-
     if (params.id) {
       loadResponse(params.id as string)
     }
-  }, [router, params.id])
+  }, [params.id])
 
   const loadResponse = async (id: string) => {
     try {
@@ -82,32 +76,36 @@ export default function AdminRelatorioPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mb-4"></div>
-          <p className="text-gray-600">Carregando anamnese...</p>
+      <AdminLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mb-4"></div>
+            <p className="text-gray-600">Carregando anamnese...</p>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     )
   }
 
   if (!response) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">Anamnese não encontrada</p>
-          <Link href="/admin/respostas">
-            <button className="mt-4 px-4 py-2 bg-pink-600 text-white rounded-lg">
-              Voltar
-            </button>
-          </Link>
+      <AdminLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-gray-600">Anamnese não encontrada</p>
+            <Link href="/admin/respostas">
+              <button className="mt-4 px-4 py-2 bg-pink-600 text-white rounded-lg">
+                Voltar
+              </button>
+            </Link>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <AdminLayout>
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
         <div className="max-w-5xl mx-auto px-4 py-4">
@@ -324,6 +322,6 @@ export default function AdminRelatorioPage() {
           </div>
         </motion.div>
       </main>
-    </div>
+    </AdminLayout>
   )
 }

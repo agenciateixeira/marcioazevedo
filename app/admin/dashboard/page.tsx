@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { UsersIcon, CheckCircleIcon, ClockIcon, TrendingUpIcon, HeartIcon, DownloadIcon } from '@/components/icons'
-import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import AdminLayout from '@/components/AdminLayout'
 
 interface Stats {
   totalLeads: number
@@ -17,7 +17,6 @@ interface Stats {
 }
 
 export default function AdminDashboard() {
-  const router = useRouter()
   const [stats, setStats] = useState<Stats>({
     totalLeads: 0,
     totalResponses: 0,
@@ -27,21 +26,10 @@ export default function AdminDashboard() {
     totalRevenue: 0
   })
   const [isLoading, setIsLoading] = useState(true)
-  const [adminEmail, setAdminEmail] = useState('')
 
   useEffect(() => {
-    // Verificar autenticação
-    const isAuth = localStorage.getItem('admin_authenticated')
-    const email = localStorage.getItem('admin_email')
-
-    if (isAuth !== 'true') {
-      router.push('/admin/login')
-      return
-    }
-
-    setAdminEmail(email || '')
     loadStats()
-  }, [router])
+  }, [])
 
   const loadStats = async () => {
     try {
@@ -93,48 +81,33 @@ export default function AdminDashboard() {
     }
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('admin_authenticated')
-    localStorage.removeItem('admin_email')
-    router.push('/admin/login')
-  }
-
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mb-4"></div>
-          <p className="text-gray-600">Carregando dashboard...</p>
+      <AdminLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mb-4"></div>
+            <p className="text-gray-600">Carregando dashboard...</p>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <AdminLayout>
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <HeartIcon className="w-8 h-8 text-pink-500" />
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Dashboard Admin</h1>
-                <p className="text-sm text-gray-500">{adminEmail}</p>
-              </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              Sair
-            </button>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+            <p className="text-sm text-gray-500 mt-1">Visão geral do sistema</p>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Leads */}
@@ -278,6 +251,6 @@ export default function AdminDashboard() {
           </div>
         </motion.div>
       </main>
-    </div>
+    </AdminLayout>
   )
 }

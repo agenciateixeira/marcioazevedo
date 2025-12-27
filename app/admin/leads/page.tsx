@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { HeartIcon, ArrowLeftIcon, CheckCircleIcon, XIcon, ClockIcon } from '@/components/icons'
-import { useRouter } from 'next/navigation'
+import { HeartIcon, CheckCircleIcon, XIcon, ClockIcon } from '@/components/icons'
 import { supabase } from '@/lib/supabase'
-import Link from 'next/link'
+import AdminLayout from '@/components/AdminLayout'
 
 interface Lead {
   id: string
@@ -20,21 +19,14 @@ interface Lead {
 }
 
 export default function AdminLeadsPage() {
-  const router = useRouter()
   const [leads, setLeads] = useState<Lead[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filter, setFilter] = useState<'all' | 'started' | 'completed'>('all')
 
   useEffect(() => {
-    const isAuth = localStorage.getItem('admin_authenticated')
-    if (isAuth !== 'true') {
-      router.push('/admin/login')
-      return
-    }
-
     loadLeads()
-  }, [router])
+  }, [])
 
   const loadLeads = async () => {
     try {
@@ -89,34 +81,26 @@ export default function AdminLeadsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mb-4"></div>
-          <p className="text-gray-600">Carregando leads...</p>
+      <AdminLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mb-4"></div>
+            <p className="text-gray-600">Carregando leads...</p>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <AdminLayout>
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/admin/dashboard">
-                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                  <ArrowLeftIcon className="w-5 h-5 text-gray-600" />
-                </button>
-              </Link>
-              <div className="flex items-center gap-3">
-                <HeartIcon className="w-8 h-8 text-pink-500" />
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Leads Capturados</h1>
-                  <p className="text-sm text-gray-500">{filteredLeads.length} leads encontrados</p>
-                </div>
-              </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Leads</h1>
+              <p className="text-sm text-gray-500 mt-1">{filteredLeads.length} leads encontrados</p>
             </div>
             <button
               onClick={exportCSV}
@@ -129,7 +113,7 @@ export default function AdminLeadsPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6 shadow-sm">
           <div className="grid md:grid-cols-2 gap-4">
@@ -267,6 +251,6 @@ export default function AdminLeadsPage() {
           )}
         </div>
       </main>
-    </div>
+    </AdminLayout>
   )
 }
