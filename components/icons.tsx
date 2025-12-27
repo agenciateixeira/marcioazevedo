@@ -137,3 +137,10 @@ export const BellIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
     <path d="M13.73 21a2 2 0 01-3.46 0"/>
   </svg>
 )
+
+export const EyeIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" xmlns="http://www.w3.org/2000/svg">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>
+)
