@@ -73,11 +73,11 @@ export default function LandingPage() {
               </span>
             </div>
 
-            <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight px-4">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight px-2 sm:px-4">
               Por que você continua repetindo os mesmos padrões no seu relacionamento?
             </h2>
 
-            <p className="text-lg md:text-xl text-gray-700 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-gray-700 mb-8 max-w-3xl mx-auto leading-relaxed px-2">
               Se você sente que está <span className="font-semibold text-pink-600">emocionalmente esgotada</span>, vivendo ciclos que parecem nunca acabar, e seu relacionamento está longe do que você sempre sonhou...
               <span className="block mt-3 font-semibold">A resposta está na sua história.</span>
             </p>
@@ -319,27 +319,27 @@ export default function LandingPage() {
               <button
                 type="submit"
                 disabled={isSubmitting || !acceptedTerms}
-                className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-bold py-5 px-8 rounded-xl flex items-center justify-center gap-3 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg hover:shadow-xl text-lg"
+                className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-bold py-4 sm:py-5 px-4 sm:px-8 rounded-xl flex items-center justify-center gap-2 sm:gap-3 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg hover:shadow-xl text-sm sm:text-base md:text-lg"
               >
                 {isSubmitting ? (
                   'Preparando sua avaliação...'
                 ) : (
                   <>
-                    <ZapIcon className="w-6 h-6" />
-                    QUERO DESCOBRIR MEUS PADRÕES AGORA
-                    <ArrowRightIcon className="w-6 h-6" />
+                    <ZapIcon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+                    <span className="leading-tight">QUERO DESCOBRIR MEUS PADRÕES AGORA</span>
+                    <ArrowRightIcon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
                   </>
                 )}
               </button>
 
-              <div className="flex items-center justify-center gap-6 mt-6 text-sm text-gray-600">
+              <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-6 text-xs sm:text-sm text-gray-600">
                 <div className="flex items-center gap-2">
-                  <ShieldIcon className="w-4 h-4 text-green-600" />
-                  <span>100% Seguro</span>
+                  <ShieldIcon className="w-4 h-4 text-green-600 flex-shrink-0" />
+                  <span className="whitespace-nowrap">100% Seguro</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <ClockIcon className="w-4 h-4 text-blue-600" />
-                  <span>10 minutos</span>
+                  <ClockIcon className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                  <span className="whitespace-nowrap">10 minutos</span>
                 </div>
               </div>
             </form>

@@ -247,10 +247,10 @@ export default function QuizPage() {
 
               {/* Question */}
               <div className="mb-8">
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight mb-2">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 leading-tight mb-2">
                   {currentQuestion.text}
                 </h2>
-                <p className="text-sm text-gray-500">
+                <p className="text-xs sm:text-sm text-gray-500">
                   Pergunta {currentQuestionIndex + 1} de {currentTest.questions.length}
                 </p>
               </div>
@@ -262,7 +262,7 @@ export default function QuizPage() {
                     key={option.label}
                     onClick={() => handleAnswer(option.label, option.score)}
                     disabled={isTransitioning}
-                    className={`w-full text-left p-5 rounded-2xl border-2 transition-all ${
+                    className={`w-full text-left p-4 sm:p-5 rounded-2xl border-2 transition-all ${
                       selectedAnswer === option.label
                         ? 'border-pink-500 bg-pink-50'
                         : 'border-gray-200 hover:border-pink-300 bg-white'
@@ -282,7 +282,7 @@ export default function QuizPage() {
                           <span className="text-sm font-medium text-gray-600">{option.label}</span>
                         )}
                       </div>
-                      <p className="flex-1 text-gray-700 leading-relaxed pt-1">
+                      <p className="flex-1 text-sm sm:text-base text-gray-700 leading-relaxed pt-1">
                         {option.text}
                       </p>
                     </div>
