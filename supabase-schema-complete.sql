@@ -339,14 +339,15 @@ ORDER BY date DESC;
 -- ============================================
 -- 10. SEED DATA - PRIMEIRO ADMIN
 -- ============================================
--- ALTERE O EMAIL E SENHA ANTES DE EXECUTAR!
+-- Email: hdlprofissional@yahoo.com.br
+-- Senha: 248367
 
 DO $$
 BEGIN
-  IF NOT EXISTS (SELECT 1 FROM admin_users WHERE email = 'admin@marcioazevedo.com') THEN
+  IF NOT EXISTS (SELECT 1 FROM admin_users WHERE email = 'hdlprofissional@yahoo.com.br') THEN
     PERFORM create_admin_user(
-      'admin@marcioazevedo.com',
-      'MudarSenha123!',
+      'hdlprofissional@yahoo.com.br',
+      '248367',
       'Administrador Principal',
       'super_admin'
     );
