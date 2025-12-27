@@ -212,8 +212,8 @@ export default function QuizPage() {
         analysis
       }))
 
-      // Redirecionar para página de resultados
-      router.push('/resultado')
+      // Redirecionar para checkout (pagamento de R$ 7)
+      router.push('/checkout')
     } catch (error) {
       console.error('Error:', error)
       alert('Ocorreu um erro ao salvar seus resultados. Por favor, tente novamente.')

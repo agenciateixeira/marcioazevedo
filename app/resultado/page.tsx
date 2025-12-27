@@ -23,15 +23,25 @@ export default function ResultadoPage() {
   const [results, setResults] = useState<Results | null>(null)
   const [scoreOutOf10, setScoreOutOf10] = useState(0)
   const [showAnalysis, setShowAnalysis] = useState(false)
+  const [isUnlocked, setIsUnlocked] = useState(false)
 
   useEffect(() => {
     const savedResults = localStorage.getItem('testResults')
+    const paymentApproved = localStorage.getItem('payment_approved')
 
     if (!savedResults) {
       router.push('/')
       return
     }
 
+    // Verificar se pagamento foi aprovado
+    if (paymentApproved !== 'true') {
+      // Se não pagou, redirecionar para checkout
+      router.push('/checkout')
+      return
+    }
+
+    setIsUnlocked(true)
     const parsedResults: Results = JSON.parse(savedResults)
     setResults(parsedResults)
 
@@ -45,7 +55,7 @@ export default function ResultadoPage() {
     }, 2500)
   }, [router])
 
-  if (!results) {
+  if (!results || !isUnlocked) {
     return null
   }
 
