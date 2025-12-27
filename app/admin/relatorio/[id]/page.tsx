@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeftIcon, DownloadIcon, CheckCircleIcon } from '@/components/icons'
 import { useParams } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import AdminLayout from '@/components/AdminLayout'
 
@@ -41,15 +40,13 @@ export default function AdminRelatorioPage() {
 
   const loadResponse = async (id: string) => {
     try {
-      const { data, error } = await supabase
-        .from('responses')
-        .select('*')
-        .eq('id', id)
-        .single()
+      const res = await fetch(`/api/admin/response/${id}`)
+      const result = await res.json()
 
-      if (error) throw error
+      if (result.data) {
+        setResponse(result.data)
+      }
 
-      setResponse(data)
       setIsLoading(false)
     } catch (error) {
       console.error('Error loading response:', error)

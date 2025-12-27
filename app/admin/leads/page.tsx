@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { HeartIcon, CheckCircleIcon, XIcon, ClockIcon } from '@/components/icons'
-import { supabase } from '@/lib/supabase'
 import AdminLayout from '@/components/AdminLayout'
 
 interface Lead {
@@ -30,14 +29,13 @@ export default function AdminLeadsPage() {
 
   const loadLeads = async () => {
     try {
-      const { data, error } = await supabase
-        .from('leads')
-        .select('*')
-        .order('created_at', { ascending: false })
+      const response = await fetch('/api/admin/leads')
+      const result = await response.json()
 
-      if (error) throw error
+      if (result.data) {
+        setLeads(result.data)
+      }
 
-      setLeads(data || [])
       setIsLoading(false)
     } catch (error) {
       console.error('Error loading leads:', error)

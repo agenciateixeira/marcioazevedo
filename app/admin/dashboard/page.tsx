@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { UsersIcon, CheckCircleIcon, ClockIcon, TrendingUpIcon, HeartIcon, DownloadIcon } from '@/components/icons'
-import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import AdminLayout from '@/components/AdminLayout'
 
@@ -33,46 +32,12 @@ export default function AdminDashboard() {
 
   const loadStats = async () => {
     try {
-      // Buscar total de leads
-      const { count: leadsCount } = await supabase
-        .from('leads')
-        .select('*', { count: 'exact', head: true })
+      const response = await fetch('/api/admin/stats')
+      const data = await response.json()
 
-      // Buscar total de responses
-      const { count: responsesCount } = await supabase
-        .from('responses')
-        .select('*', { count: 'exact', head: true })
-
-      // Buscar responses com pagamento aprovado
-      const { data: paidData, count: paidCount } = await supabase
-        .from('responses')
-        .select('payment_amount', { count: 'exact' })
-        .eq('payment_status', 'approved')
-
-      // Buscar pagamentos pendentes
-      const { count: pendingCount } = await supabase
-        .from('responses')
-        .select('*', { count: 'exact', head: true })
-        .eq('payment_status', 'pending')
-
-      // Calcular receita total
-      const totalRevenue = paidData?.reduce((sum, item) =>
-        sum + (parseFloat(item.payment_amount?.toString() || '0')), 0
-      ) || 0
-
-      // Calcular taxa de conversão (responses / leads)
-      const conversionRate = leadsCount && leadsCount > 0
-        ? (responsesCount! / leadsCount) * 100
-        : 0
-
-      setStats({
-        totalLeads: leadsCount || 0,
-        totalResponses: responsesCount || 0,
-        paidResponses: paidCount || 0,
-        pendingPayments: pendingCount || 0,
-        conversionRate,
-        totalRevenue
-      })
+      if (data.stats) {
+        setStats(data.stats)
+      }
 
       setIsLoading(false)
     } catch (error) {

@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { HeartIcon, CheckCircleIcon, AlertCircleIcon, ClockIcon, EyeIcon } from '@/components/icons'
-import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import AdminLayout from '@/components/AdminLayout'
 
@@ -34,14 +33,13 @@ export default function AdminRespostasPage() {
 
   const loadResponses = async () => {
     try {
-      const { data, error } = await supabase
-        .from('responses')
-        .select('*')
-        .order('created_at', { ascending: false })
+      const response = await fetch('/api/admin/responses')
+      const result = await response.json()
 
-      if (error) throw error
+      if (result.data) {
+        setResponses(result.data)
+      }
 
-      setResponses(data || [])
       setIsLoading(false)
     } catch (error) {
       console.error('Error loading responses:', error)
