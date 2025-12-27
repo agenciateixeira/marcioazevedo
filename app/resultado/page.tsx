@@ -391,7 +391,7 @@ export default function ResultadoPage() {
                 </div>
               </motion.div>
 
-              {/* CTA - Vai ser substituído pelo funil de vendas */}
+              {/* CTA - Funil de Vendas */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -407,15 +407,19 @@ export default function ResultadoPage() {
                   Mas consciência sem ação não transforma.
                 </p>
                 <button
-                  className="bg-white text-pink-600 font-bold py-4 px-8 rounded-xl hover:bg-gray-50 transition-all transform hover:scale-105 inline-flex items-center gap-3 text-lg shadow-lg"
+                  onClick={() => router.push('/oferta-1')}
+                  className="w-full bg-white text-pink-600 font-bold py-5 px-8 rounded-xl hover:bg-gray-50 transition-all transform hover:scale-105 inline-flex items-center justify-center gap-3 text-lg shadow-lg mb-4"
                 >
                   <SparklesIcon className="w-6 h-6" />
-                  Ver Solução Completa
+                  VER SOLUÇÃO COMPLETA
                   <ArrowRightIcon className="w-6 h-6" />
                 </button>
-                <p className="text-sm mt-4 opacity-75">
-                  Descubra o caminho para romper esses padrões de uma vez por todas
-                </p>
+                <button
+                  onClick={() => router.push('/canal-whatsapp')}
+                  className="text-white/90 hover:text-white underline text-sm transition-all"
+                >
+                  Não quero ver ofertas, ir direto para o canal WhatsApp →
+                </button>
               </motion.div>
 
               {/* Actions */}
