@@ -59,14 +59,14 @@ export async function userHasAccess(email: string, productSlug: string): Promise
     .from('purchases')
     .select(`
       id,
-      product:products(slug)
+      products(slug)
     `)
     .eq('user_email', email)
     .eq('payment_status', 'approved')
 
   if (error || !data) return false
 
-  return data.some((purchase: any) => purchase.product?.slug === productSlug)
+  return data.some((purchase: any) => purchase.products?.slug === productSlug)
 }
 
 /**
@@ -80,13 +80,30 @@ export async function getUserPurchases(email: string) {
       created_at,
       amount_paid,
       payment_status,
-      product:products(*)
+      products (
+        id,
+        slug,
+        name,
+        description,
+        content_type,
+        content_url,
+        thumbnail_url
+      )
     `)
     .eq('user_email', email)
     .eq('payment_status', 'approved')
     .order('created_at', { ascending: false })
 
-  return { purchases: data || [], error }
+  // Transformar o retorno para o formato esperado
+  const purchases = data?.map((purchase: any) => ({
+    id: purchase.id,
+    created_at: purchase.created_at,
+    amount_paid: purchase.amount_paid,
+    payment_status: purchase.payment_status,
+    product: purchase.products
+  })) || []
+
+  return { purchases, error }
 }
 
 /**
