@@ -4,26 +4,30 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { HeartIcon, CheckIcon, SparklesIcon, XIcon, ClockIcon, ArrowRightIcon, BookOpenIcon, StarIcon } from '@/components/icons'
 import { useRouter } from 'next/navigation'
+import StripePaymentForm from '@/components/StripePaymentForm'
 
 export default function Oferta1Page() {
   const router = useRouter()
   const [userName, setUserName] = useState('')
+  const [userEmail, setUserEmail] = useState('')
   const [userScore, setUserScore] = useState(0)
   const [timeLeft, setTimeLeft] = useState(15 * 60) // 15 minutos em segundos
-  const [isLoading, setIsLoading] = useState(false)
+  const [showPaymentForm, setShowPaymentForm] = useState(false)
 
   useEffect(() => {
     // Verificar se veio do resultado
     const name = localStorage.getItem('userName')
+    const email = localStorage.getItem('userEmail')
     const results = localStorage.getItem('testResults')
 
-    if (!name || !results) {
+    if (!name || !email || !results) {
       router.push('/')
       return
     }
 
     const parsedResults = JSON.parse(results)
     setUserName(name)
+    setUserEmail(email)
     setUserScore(Math.round((parsedResults.percentage / 100) * 10 * 10) / 10)
 
     // Timer de 15 minutos
@@ -46,47 +50,18 @@ export default function Oferta1Page() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
 
-  const handleAccept = async () => {
-    setIsLoading(true)
+  const handlePaymentSuccess = () => {
+    // Salvar que aceitou o upsell 1
+    localStorage.setItem('upsell1_accepted', 'true')
 
-    try {
-      const email = localStorage.getItem('userEmail')
-      const name = localStorage.getItem('userName')
+    // Redirecionar para oferta 3
+    setTimeout(() => {
+      router.push('/oferta-3')
+    }, 1500)
+  }
 
-      // Criar Checkout Session no Stripe para Upsell 1 (R$ 97)
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_EBOOK_COMPLETO, // R$ 97,00
-          email,
-          name,
-          productType: 'ebook_completo'
-        }),
-      })
-
-      const { sessionId, error } = await response.json()
-
-      if (error) {
-        alert('Erro ao processar pagamento. Tente novamente.')
-        setIsLoading(false)
-        return
-      }
-
-      // Salvar que aceitou o upsell 1
-      localStorage.setItem('upsell1_accepted', 'true')
-
-      // Redirecionar para o Stripe Checkout
-      const stripe = await (window as any).Stripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
-      await stripe.redirectToCheckout({ sessionId })
-
-    } catch (error) {
-      console.error('Erro:', error)
-      alert('Erro ao processar pagamento. Tente novamente.')
-      setIsLoading(false)
-    }
+  const handlePaymentError = (error: string) => {
+    console.error('Payment error:', error)
   }
 
   const handleDecline = () => {
@@ -250,37 +225,56 @@ export default function Oferta1Page() {
         </motion.div>
 
         {/* CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="space-y-4"
-        >
-          {/* Botão Aceitar */}
-          <button
-            onClick={handleAccept}
-            disabled={isLoading}
-            className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-6 px-8 rounded-xl flex items-center justify-center gap-3 transition-all transform hover:scale-105 disabled:opacity-50 disabled:transform-none shadow-2xl text-lg md:text-xl"
+        {!showPaymentForm ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="space-y-4"
           >
-            {isLoading ? (
-              'Processando...'
-            ) : (
-              <>
-                <CheckIcon className="w-6 h-6" />
-                SIM! QUERO O E-BOOK COMPLETO
-                <ArrowRightIcon className="w-6 h-6" />
-              </>
-            )}
-          </button>
+            {/* Botão Aceitar */}
+            <button
+              onClick={() => setShowPaymentForm(true)}
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-6 px-8 rounded-xl flex items-center justify-center gap-3 transition-all transform hover:scale-105 shadow-2xl text-lg md:text-xl"
+            >
+              <CheckIcon className="w-6 h-6" />
+              SIM! QUERO O E-BOOK COMPLETO
+              <ArrowRightIcon className="w-6 h-6" />
+            </button>
 
-          {/* Botão Recusar */}
-          <button
-            onClick={handleDecline}
-            className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-4 px-8 rounded-xl transition-all text-sm"
+            {/* Botão Recusar */}
+            <button
+              onClick={handleDecline}
+              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-4 px-8 rounded-xl transition-all text-sm"
+            >
+              Não, obrigada. Prefiro continuar sem solução prática.
+            </button>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mb-8"
           >
-            Não, obrigada. Prefiro continuar sem solução prática.
-          </button>
-        </motion.div>
+            <StripePaymentForm
+              amount={97}
+              email={userEmail}
+              name={userName}
+              productType="ebook_completo"
+              onSuccess={handlePaymentSuccess}
+              onError={handlePaymentError}
+            />
+
+            {/* Botão para voltar */}
+            <button
+              onClick={() => setShowPaymentForm(false)}
+              className="w-full mt-4 bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-3 px-8 rounded-xl transition-all text-sm"
+            >
+              ← Voltar
+            </button>
+          </motion.div>
+        )}
 
         {/* Escassez */}
         <motion.div

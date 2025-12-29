@@ -4,17 +4,20 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { HeartIcon, CheckIcon, XIcon, ArrowRightIcon, BookOpenIcon, AlertCircleIcon } from '@/components/icons'
 import { useRouter } from 'next/navigation'
+import StripePaymentForm from '@/components/StripePaymentForm'
 
 export default function Oferta2Page() {
   const router = useRouter()
   const [userName, setUserName] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [userEmail, setUserEmail] = useState('')
+  const [showPaymentForm, setShowPaymentForm] = useState(false)
 
   useEffect(() => {
     const name = localStorage.getItem('userName')
+    const email = localStorage.getItem('userEmail')
     const upsell1 = localStorage.getItem('upsell1_accepted')
 
-    if (!name) {
+    if (!name || !email) {
       router.push('/')
       return
     }
@@ -26,49 +29,21 @@ export default function Oferta2Page() {
     }
 
     setUserName(name)
+    setUserEmail(email)
   }, [router])
 
-  const handleAccept = async () => {
-    setIsLoading(true)
+  const handlePaymentSuccess = () => {
+    // Salvar que aceitou o upsell 2
+    localStorage.setItem('upsell2_accepted', 'true')
 
-    try {
-      const email = localStorage.getItem('userEmail')
-      const name = localStorage.getItem('userName')
+    // Redirecionar para canal WhatsApp
+    setTimeout(() => {
+      router.push('/canal-whatsapp')
+    }, 1500)
+  }
 
-      // Criar Checkout Session no Stripe para Upsell 2 (R$ 47)
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_EBOOK_SIMPLES, // R$ 47,00
-          email,
-          name,
-          productType: 'ebook_simples'
-        }),
-      })
-
-      const { sessionId, error } = await response.json()
-
-      if (error) {
-        alert('Erro ao processar pagamento. Tente novamente.')
-        setIsLoading(false)
-        return
-      }
-
-      // Salvar que aceitou o upsell 2
-      localStorage.setItem('upsell2_accepted', 'true')
-
-      // Redirecionar para o Stripe Checkout
-      const stripe = await (window as any).Stripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
-      await stripe.redirectToCheckout({ sessionId })
-
-    } catch (error) {
-      console.error('Erro:', error)
-      alert('Erro ao processar pagamento. Tente novamente.')
-      setIsLoading(false)
-    }
+  const handlePaymentError = (error: string) => {
+    console.error('Payment error:', error)
   }
 
   const handleDecline = () => {
@@ -197,37 +172,56 @@ export default function Oferta2Page() {
         </motion.div>
 
         {/* CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="space-y-4"
-        >
-          {/* Botão Aceitar */}
-          <button
-            onClick={handleAccept}
-            disabled={isLoading}
-            className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-6 px-8 rounded-xl flex items-center justify-center gap-3 transition-all transform hover:scale-105 disabled:opacity-50 disabled:transform-none shadow-2xl text-lg md:text-xl"
+        {!showPaymentForm ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="space-y-4"
           >
-            {isLoading ? (
-              'Processando...'
-            ) : (
-              <>
-                <CheckIcon className="w-6 h-6" />
-                SIM! QUERO OS PRIMEIROS PASSOS
-                <ArrowRightIcon className="w-6 h-6" />
-              </>
-            )}
-          </button>
+            {/* Botão Aceitar */}
+            <button
+              onClick={() => setShowPaymentForm(true)}
+              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-6 px-8 rounded-xl flex items-center justify-center gap-3 transition-all transform hover:scale-105 shadow-2xl text-lg md:text-xl"
+            >
+              <CheckIcon className="w-6 h-6" />
+              SIM! QUERO OS PRIMEIROS PASSOS
+              <ArrowRightIcon className="w-6 h-6" />
+            </button>
 
-          {/* Botão Recusar */}
-          <button
-            onClick={handleDecline}
-            className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-4 px-8 rounded-xl transition-all text-sm"
+            {/* Botão Recusar */}
+            <button
+              onClick={handleDecline}
+              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-4 px-8 rounded-xl transition-all text-sm"
+            >
+              Não quero transformação. Vou continuar do jeito que está.
+            </button>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mb-8"
           >
-            Não quero transformação. Vou continuar do jeito que está.
-          </button>
-        </motion.div>
+            <StripePaymentForm
+              amount={47}
+              email={userEmail}
+              name={userName}
+              productType="ebook_simples"
+              onSuccess={handlePaymentSuccess}
+              onError={handlePaymentError}
+            />
+
+            {/* Botão para voltar */}
+            <button
+              onClick={() => setShowPaymentForm(false)}
+              className="w-full mt-4 bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-3 px-8 rounded-xl transition-all text-sm"
+            >
+              ← Voltar
+            </button>
+          </motion.div>
+        )}
 
         {/* Escassez */}
         <div className="text-center mt-8">
