@@ -144,21 +144,3 @@ export async function updateUserProgress(
 
   return { data, error }
 }
-
-/**
- * Verificar se é primeiro acesso (usuário não tem senha definida)
- */
-export async function isFirstAccess(email: string): Promise<boolean> {
-  // Verificar se existe um usuário com esse email
-  const { data: { users }, error } = await supabase.auth.admin.listUsers()
-
-  if (error) return true
-
-  const user = users?.find(u => u.email === email)
-
-  // Se não encontrou usuário, é primeiro acesso
-  if (!user) return true
-
-  // Se encontrou mas não tem senha definida, é primeiro acesso
-  return !user.encrypted_password
-}
