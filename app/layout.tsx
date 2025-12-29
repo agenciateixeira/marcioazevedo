@@ -127,6 +127,9 @@ export default function RootLayout({
             __html: JSON.stringify(jsonLdService),
           }}
         />
+
+        {/* Stripe.js */}
+        <Script src="https://js.stripe.com/v3/" strategy="beforeInteractive" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

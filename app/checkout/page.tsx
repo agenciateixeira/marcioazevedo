@@ -2,16 +2,16 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { HeartIcon, CheckIcon, LockIcon, ShieldIcon, ClockIcon, ArrowRightIcon, SparklesIcon } from '@/components/icons'
+import { HeartIcon, CheckIcon, LockIcon, ShieldIcon, ClockIcon, SparklesIcon } from '@/components/icons'
 import { useRouter } from 'next/navigation'
+import StripePaymentForm from '@/components/StripePaymentForm'
 
 export default function CheckoutPage() {
   const router = useRouter()
   const [userName, setUserName] = useState('')
   const [userEmail, setUserEmail] = useState('')
   const [userScore, setUserScore] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'kiwify'>('stripe')
+  const [showPaymentForm, setShowPaymentForm] = useState(false)
 
   useEffect(() => {
     const name = localStorage.getItem('userName')
@@ -29,25 +29,18 @@ export default function CheckoutPage() {
     setUserScore(Math.round((parsedResults.percentage / 100) * 10 * 10) / 10)
   }, [router])
 
-  const handlePayment = async () => {
-    setIsLoading(true)
+  const handlePaymentSuccess = () => {
+    // Salvar status de pagamento
+    localStorage.setItem('payment_status', 'approved')
 
-    if (paymentMethod === 'stripe') {
-      // TODO: Integração Stripe
-      // Criar Checkout Session e redirecionar
-      alert('Integração Stripe será implementada quando você fornecer as credenciais')
+    // Redirecionar para oferta 1
+    setTimeout(() => {
+      router.push('/oferta-1')
+    }, 1500)
+  }
 
-      // Por enquanto, simular pagamento (remover depois)
-      localStorage.setItem('payment_status', 'pending')
-      router.push('/aguardando')
-    } else {
-      // TODO: Integração Kiwify
-      // window.location.href = 'LINK_KIWIFY_PRODUTO_7_REAIS'
-      alert('Link do Kiwify será adicionado quando você fornecer')
-
-      localStorage.setItem('payment_status', 'pending')
-      router.push('/aguardando')
-    }
+  const handlePaymentError = (error: string) => {
+    console.error('Payment error:', error)
   }
 
   if (!userName) {
@@ -178,82 +171,49 @@ export default function CheckoutPage() {
           </div>
         </motion.div>
 
-        {/* Seleção de Método de Pagamento */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-white border-2 border-gray-200 rounded-2xl p-6 mb-6"
-        >
-          <h3 className="text-lg font-bold text-gray-900 mb-4 text-center">
-            Escolha sua forma de pagamento:
-          </h3>
-          <div className="grid md:grid-cols-2 gap-4">
-            <button
-              onClick={() => setPaymentMethod('stripe')}
-              className={`p-5 rounded-xl border-2 transition-all ${
-                paymentMethod === 'stripe'
-                  ? 'border-pink-500 bg-pink-50'
-                  : 'border-gray-200 hover:border-pink-300'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-bold text-gray-900">Cartão de Crédito</span>
-                {paymentMethod === 'stripe' && <CheckIcon className="w-5 h-5 text-pink-500" />}
-              </div>
-              <p className="text-sm text-gray-600">Via Stripe (seguro e rápido)</p>
-            </button>
-
-            <button
-              onClick={() => setPaymentMethod('kiwify')}
-              className={`p-5 rounded-xl border-2 transition-all ${
-                paymentMethod === 'kiwify'
-                  ? 'border-pink-500 bg-pink-50'
-                  : 'border-gray-200 hover:border-pink-300'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-bold text-gray-900">PIX ou Boleto</span>
-                {paymentMethod === 'kiwify' && <CheckIcon className="w-5 h-5 text-pink-500" />}
-              </div>
-              <p className="text-sm text-gray-600">Via Kiwify (várias opções)</p>
-            </button>
-          </div>
-        </motion.div>
-
-        {/* CTA Final */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <button
-            onClick={handlePayment}
-            disabled={isLoading}
-            className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-bold py-6 px-8 rounded-xl flex items-center justify-center gap-3 transition-all transform hover:scale-105 disabled:opacity-50 disabled:transform-none shadow-2xl text-lg md:text-xl mb-4"
+        {/* Formulário de Pagamento */}
+        {!showPaymentForm ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
           >
-            {isLoading ? (
-              'Processando...'
-            ) : (
-              <>
-                <LockIcon className="w-6 h-6" />
-                DESBLOQUEAR MEU RESULTADO AGORA
-                <ArrowRightIcon className="w-6 h-6" />
-              </>
-            )}
-          </button>
+            <button
+              onClick={() => setShowPaymentForm(true)}
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-6 px-8 rounded-xl flex items-center justify-center gap-3 transition-all transform hover:scale-105 shadow-2xl text-lg md:text-xl mb-4"
+            >
+              <LockIcon className="w-6 h-6" />
+              DESBLOQUEAR MEU RESULTADO AGORA
+              <SparklesIcon className="w-6 h-6" />
+            </button>
 
-          <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
-            <div className="flex items-center gap-2">
-              <ShieldIcon className="w-4 h-4 text-green-600" />
-              <span>Pagamento 100% Seguro</span>
+            <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <ShieldIcon className="w-4 h-4 text-green-600" />
+                <span>Pagamento 100% Seguro</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <ClockIcon className="w-4 h-4 text-blue-600" />
+                <span>Acesso Imediato</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <ClockIcon className="w-4 h-4 text-blue-600" />
-              <span>Acesso Imediato</span>
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <StripePaymentForm
+              amount={7}
+              email={userEmail}
+              name={userName}
+              productType="resultado"
+              onSuccess={handlePaymentSuccess}
+              onError={handlePaymentError}
+            />
+          </motion.div>
+        )}
 
         {/* Prova Social */}
         <motion.div

@@ -28,16 +28,47 @@ export default function Oferta2Page() {
     setUserName(name)
   }, [router])
 
-  const handleAccept = () => {
+  const handleAccept = async () => {
     setIsLoading(true)
-    // TODO: Redirecionar para Kiwify (link será inserido depois)
-    // window.location.href = 'LINK_KIWIFY_UPSELL_2'
 
-    // Por enquanto, salvar que aceitou
-    localStorage.setItem('upsell2_accepted', 'true')
-    setTimeout(() => {
-      router.push('/canal-whatsapp')
-    }, 1000)
+    try {
+      const email = localStorage.getItem('userEmail')
+      const name = localStorage.getItem('userName')
+
+      // Criar Checkout Session no Stripe para Upsell 2 (R$ 47)
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_EBOOK_SIMPLES, // R$ 47,00
+          email,
+          name,
+          productType: 'ebook_simples'
+        }),
+      })
+
+      const { sessionId, error } = await response.json()
+
+      if (error) {
+        alert('Erro ao processar pagamento. Tente novamente.')
+        setIsLoading(false)
+        return
+      }
+
+      // Salvar que aceitou o upsell 2
+      localStorage.setItem('upsell2_accepted', 'true')
+
+      // Redirecionar para o Stripe Checkout
+      const stripe = await (window as any).Stripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+      await stripe.redirectToCheckout({ sessionId })
+
+    } catch (error) {
+      console.error('Erro:', error)
+      alert('Erro ao processar pagamento. Tente novamente.')
+      setIsLoading(false)
+    }
   }
 
   const handleDecline = () => {
