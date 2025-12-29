@@ -2,15 +2,17 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { HeartIcon, CheckIcon, SparklesIcon, BellIcon, ArrowRightIcon, HomeIcon } from '@/components/icons'
+import { HeartIcon, CheckIcon, SparklesIcon, BellIcon, ArrowRightIcon, HomeIcon, LockIcon } from '@/components/icons'
 import { useRouter } from 'next/navigation'
 
 export default function CanalWhatsAppPage() {
   const router = useRouter()
   const [userName, setUserName] = useState('')
+  const [userEmail, setUserEmail] = useState('')
 
   useEffect(() => {
     const name = localStorage.getItem('userName')
+    const email = localStorage.getItem('userEmail')
 
     if (!name) {
       router.push('/')
@@ -18,6 +20,7 @@ export default function CanalWhatsAppPage() {
     }
 
     setUserName(name)
+    setUserEmail(email || '')
   }, [router])
 
   const handleJoinChannel = () => {
@@ -90,11 +93,65 @@ export default function CanalWhatsAppPage() {
             </div>
           </motion.div>
 
+          {/* Área de Membros */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-gradient-to-br from-pink-500 to-purple-600 rounded-3xl p-8 md:p-10 text-white mb-8 shadow-2xl"
+          >
+            <div className="text-center mb-6">
+              <LockIcon className="w-16 h-16 mx-auto mb-4" />
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                🎁 Acesse Sua Área de Membros
+              </h2>
+              <p className="text-lg md:text-xl opacity-95 mb-2">
+                Seus conteúdos já estão disponíveis!
+              </p>
+              {userEmail && (
+                <p className="text-sm opacity-90 bg-white/10 rounded-lg py-2 px-4 inline-block">
+                  📧 {userEmail}
+                </p>
+              )}
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-6">
+              <h3 className="text-xl font-bold mb-4 text-center">✨ Disponível agora para você:</h3>
+              <div className="space-y-3">
+                {[
+                  '📊 Seu resultado completo da Anamnese Emocional',
+                  '📚 Acesso aos e-books que você adquiriu',
+                  '🎥 Vídeo aulas e materiais complementares',
+                  '📈 Acompanhe seu progresso de transformação',
+                  '👤 Gerencie seu perfil e preferências',
+                ].map((item, index) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <CheckIcon className="w-5 h-5 flex-shrink-0 mt-1" />
+                    <p className="leading-relaxed">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={() => router.push('/area-membros/primeiro-acesso')}
+              className="w-full bg-white text-pink-600 font-bold py-6 px-8 rounded-xl hover:bg-gray-50 transition-all transform hover:scale-105 shadow-xl text-lg md:text-xl flex items-center justify-center gap-3"
+            >
+              <LockIcon className="w-6 h-6" />
+              ACESSAR MEUS CONTEÚDOS AGORA
+              <ArrowRightIcon className="w-6 h-6" />
+            </button>
+
+            <p className="text-center text-sm mt-4 opacity-90">
+              ✅ Acesso imediato • Todos os seus produtos em um só lugar
+            </p>
+          </motion.div>
+
           {/* Canal do WhatsApp */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.5 }}
             className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-3xl p-8 md:p-10 text-white mb-8 shadow-2xl"
           >
             <div className="text-center mb-8">
@@ -145,7 +202,7 @@ export default function CanalWhatsAppPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.7 }}
             className="bg-pink-50 border-2 border-pink-200 rounded-2xl p-8 mb-8"
           >
             <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center flex items-center justify-center gap-2">
@@ -156,13 +213,13 @@ export default function CanalWhatsAppPage() {
               {[
                 {
                   number: 1,
-                  title: 'Releia sua análise personalizada',
-                  desc: 'Volte à página de resultado e anote os padrões identificados'
+                  title: 'Acesse sua Área de Membros',
+                  desc: 'Entre agora e confira todos os seus conteúdos em um só lugar'
                 },
                 {
                   number: 2,
-                  title: 'Comece pelos pequenos passos',
-                  desc: 'Escolha 1 ação do seu plano e coloque em prática esta semana'
+                  title: 'Releia sua análise personalizada',
+                  desc: 'Volte ao resultado e anote os padrões emocionais identificados'
                 },
                 {
                   number: 3,
@@ -171,8 +228,8 @@ export default function CanalWhatsAppPage() {
                 },
                 {
                   number: 4,
-                  title: 'Busque ajuda profissional',
-                  desc: 'Considere terapia ou mentoria para acelerar sua transformação'
+                  title: 'Comece pelos pequenos passos',
+                  desc: 'Escolha 1 ação do seu plano e coloque em prática esta semana'
                 },
               ].map((step, index) => (
                 <div key={index} className="flex items-start gap-4">
@@ -192,7 +249,7 @@ export default function CanalWhatsAppPage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
+            transition={{ delay: 0.9 }}
             className="text-center mb-8"
           >
             <p className="text-lg md:text-xl text-gray-700 leading-relaxed max-w-2xl mx-auto">
@@ -207,7 +264,7 @@ export default function CanalWhatsAppPage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1 }}
+            transition={{ delay: 1.1 }}
             className="text-center"
           >
             <button
