@@ -43,6 +43,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'No email found' }, { status: 400 })
       }
 
+      const amountPaid = paymentIntent.amount / 100 // Converter de centavos para reais
+
       // Se for pagamento do resultado (R$ 7), desbloquear acesso
       if (productType === 'resultado') {
         const { error } = await supabase
@@ -50,7 +52,7 @@ export async function POST(request: NextRequest) {
           .update({
             payment_status: 'approved',
             payment_id: paymentIntent.id,
-            payment_amount: paymentIntent.amount / 100, // Converter de centavos
+            payment_amount: amountPaid,
             payment_date: new Date().toISOString(),
             result_unlocked: true,
             result_unlocked_at: new Date().toISOString()
@@ -67,16 +69,33 @@ export async function POST(request: NextRequest) {
         console.log(`Result unlocked for ${customerEmail}`)
       }
 
-      // Para outros produtos (upsells), você pode adicionar lógica específica aqui
-      // Por exemplo, enviar e-mail com o e-book, agendar mentoria, etc.
+      // Criar purchase na área de membros para TODOS os produtos
+      if (productType) {
+        const { data, error: purchaseError } = await supabase
+          .rpc('create_purchase_from_payment', {
+            p_email: customerEmail,
+            p_product_type: productType,
+            p_payment_id: paymentIntent.id,
+            p_amount: amountPaid
+          })
+
+        if (purchaseError) {
+          console.error('Error creating purchase:', purchaseError)
+          // Não retornar erro, apenas logar - o pagamento já foi processado
+        } else {
+          console.log(`Purchase created for ${customerEmail} - ${productType} - Purchase ID: ${data}`)
+        }
+      }
+
+      // Logs específicos por produto
       if (productType === 'ebook_completo') {
         console.log(`E-book completo vendido para ${customerEmail}`)
-        // TODO: Enviar e-mail com link do e-book
+        // TODO: Enviar e-mail com link para área de membros
       }
 
       if (productType === 'ebook_simples') {
         console.log(`E-book simples vendido para ${customerEmail}`)
-        // TODO: Enviar e-mail com link do e-book
+        // TODO: Enviar e-mail com link para área de membros
       }
 
       if (productType === 'mentoria') {
@@ -99,6 +118,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'No email found' }, { status: 400 })
       }
 
+      const amountPaid = session.amount_total ? session.amount_total / 100 : 7.00
+
       // Se for pagamento do resultado (R$ 7), desbloquear acesso
       if (productType === 'resultado') {
         const { error } = await supabase
@@ -106,7 +127,7 @@ export async function POST(request: NextRequest) {
           .update({
             payment_status: 'approved',
             payment_id: session.payment_intent as string || session.id,
-            payment_amount: session.amount_total ? session.amount_total / 100 : 7.00,
+            payment_amount: amountPaid,
             payment_date: new Date().toISOString(),
             result_unlocked: true,
             result_unlocked_at: new Date().toISOString()
@@ -121,6 +142,24 @@ export async function POST(request: NextRequest) {
         }
 
         console.log(`Result unlocked for ${customerEmail}`)
+      }
+
+      // Criar purchase na área de membros para TODOS os produtos
+      if (productType) {
+        const { data, error: purchaseError } = await supabase
+          .rpc('create_purchase_from_payment', {
+            p_email: customerEmail,
+            p_product_type: productType,
+            p_payment_id: session.payment_intent as string || session.id,
+            p_amount: amountPaid
+          })
+
+        if (purchaseError) {
+          console.error('Error creating purchase:', purchaseError)
+          // Não retornar erro, apenas logar - o pagamento já foi processado
+        } else {
+          console.log(`Purchase created for ${customerEmail} - ${productType} - Purchase ID: ${data}`)
+        }
       }
 
       return NextResponse.json({ received: true, updated: true })
