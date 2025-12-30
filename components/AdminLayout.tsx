@@ -38,10 +38,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 overflow-x-hidden">
       <AdminSidebar adminEmail={adminEmail} />
-      <div className="flex-1 overflow-x-hidden">
-        {children}
+      <div className="flex-1 overflow-x-hidden w-full lg:w-auto">
+        <div className="pt-16 lg:pt-0">
+          {children}
+        </div>
       </div>
     </div>
   )

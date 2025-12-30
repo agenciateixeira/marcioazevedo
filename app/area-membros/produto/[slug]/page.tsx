@@ -265,13 +265,13 @@ export default function ProdutoPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50">
+    <div className="flex min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 overflow-x-hidden">
       {/* Sidebar */}
       <MembersSidebar user={user} />
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="max-w-6xl mx-auto px-4 lg:px-8 py-8 lg:ml-0 ml-16">
+      <div className="flex-1 overflow-x-hidden w-full lg:w-auto">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-20 lg:pt-8">
           {/* Progress Bar */}
           <div className="mb-6 bg-white rounded-2xl border-2 border-gray-100 p-4 shadow-sm">
             <div className="flex items-center justify-between mb-2">

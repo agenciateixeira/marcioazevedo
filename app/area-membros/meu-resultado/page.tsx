@@ -259,11 +259,11 @@ export default function MeuResultadoPage() {
   const predictiveAnalysis = generatePredictiveAnalysis()
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50">
+    <div className="flex min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 overflow-x-hidden">
       <MembersSidebar user={user} />
 
-      <div className="flex-1 overflow-auto">
-        <div className="max-w-5xl mx-auto px-4 lg:px-8 py-8 md:py-12 lg:ml-0 ml-16">
+      <div className="flex-1 overflow-x-hidden w-full lg:w-auto">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 pt-20 lg:pt-8">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
