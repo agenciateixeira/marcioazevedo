@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { HeartIcon, UsersIcon, ClockIcon, DownloadIcon, HomeIcon, ArrowLeftIcon } from './icons'
+import { HeartIcon, UsersIcon, ClockIcon, DownloadIcon, HomeIcon, ArrowLeftIcon, BookIcon } from './icons'
 import { motion } from 'framer-motion'
 
 interface AdminSidebarProps {
@@ -40,6 +40,12 @@ export default function AdminSidebar({ adminEmail }: AdminSidebarProps) {
       href: '/admin/respostas',
       icon: HeartIcon,
       description: 'Testes completos'
+    },
+    {
+      name: 'Produtos',
+      href: '/admin/produtos',
+      icon: BookIcon,
+      description: 'Gerenciar conteúdos'
     }
   ]
 
