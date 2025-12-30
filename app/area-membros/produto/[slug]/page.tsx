@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { ArrowLeftIcon, DownloadIcon, PlayIcon, BookIcon, HeadphonesIcon, CheckIcon } from '@/components/icons'
+import { DownloadIcon, PlayIcon, BookIcon, HeadphonesIcon, CheckIcon } from '@/components/icons'
 import { getCurrentUser, userHasAccess, getUserProgress, updateUserProgress } from '@/lib/auth'
 import { supabase } from '@/lib/supabase'
+import MembersSidebar from '@/components/MembersSidebar'
 
 interface Product {
   id: string
@@ -264,40 +265,26 @@ export default function ProdutoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            {/* Back Button */}
-            <button
-              onClick={() => router.push('/area-membros/dashboard')}
-              className="flex items-center gap-2 text-gray-700 hover:text-pink-600 transition-colors"
-            >
-              <ArrowLeftIcon className="w-5 h-5" />
-              <span className="font-medium hidden sm:inline">Voltar ao Dashboard</span>
-              <span className="font-medium sm:hidden">Voltar</span>
-            </button>
+    <div className="flex min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50">
+      {/* Sidebar */}
+      <MembersSidebar user={user} />
 
-            {/* Progress */}
-            <div className="flex items-center gap-3">
-              <div className="hidden md:block">
-                <div className="text-xs text-gray-600 mb-1">Progresso</div>
-                <div className="w-32 bg-gray-200 rounded-full h-2">
-                  <div
-                    className="bg-gradient-to-r from-pink-500 to-purple-600 h-2 rounded-full transition-all"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-              </div>
-              <div className="font-bold text-pink-600">{progress}%</div>
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto">
+        <div className="max-w-6xl mx-auto px-4 lg:px-8 py-8 lg:ml-0 ml-16">
+          {/* Progress Bar */}
+          <div className="mb-6 bg-white rounded-2xl border-2 border-gray-100 p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-semibold text-gray-700">Seu Progresso</span>
+              <span className="text-lg font-bold text-pink-600">{progress}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-3">
+              <div
+                className="bg-gradient-to-r from-pink-500 to-purple-600 h-3 rounded-full transition-all"
+                style={{ width: `${progress}%` }}
+              />
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -337,19 +324,6 @@ export default function ProdutoPage() {
             </button>
           </div>
         </motion.div>
-
-        {/* Mobile Progress Bar */}
-        <div className="md:hidden mt-6 bg-white rounded-xl border-2 border-gray-100 p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold text-gray-700">Seu Progresso</span>
-            <span className="text-sm font-bold text-pink-600">{progress}%</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-3">
-            <div
-              className="bg-gradient-to-r from-pink-500 to-purple-600 h-3 rounded-full transition-all"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
         </div>
       </div>
     </div>
