@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -26,6 +26,14 @@ export default function MembersSidebar({ user, userName }: MembersSidebarProps) 
   const router = useRouter()
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(false)
+
+  useEffect(() => {
+    const checkScreen = () => setIsDesktop(window.innerWidth >= 1024)
+    checkScreen()
+    window.addEventListener('resize', checkScreen)
+    return () => window.removeEventListener('resize', checkScreen)
+  }, [])
 
   const menuItems = [
     {
@@ -86,10 +94,10 @@ export default function MembersSidebar({ user, userName }: MembersSidebarProps) 
       <motion.aside
         initial={false}
         animate={{
-          x: isMobileMenuOpen ? 0 : '-100%',
+          x: isDesktop ? 0 : (isMobileMenuOpen ? 0 : '-100%'),
         }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="lg:translate-x-0 fixed lg:sticky top-0 left-0 h-screen w-64 bg-gradient-to-b from-pink-500 to-purple-600 text-white z-50 flex flex-col shadow-2xl"
+        className="fixed lg:sticky top-0 left-0 h-screen w-64 bg-gradient-to-b from-pink-500 to-purple-600 text-white z-50 flex flex-col shadow-2xl"
       >
         {/* Close button (mobile) */}
         <button

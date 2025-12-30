@@ -355,7 +355,7 @@ export default function ProdutosAdminPage() {
                     value={form.slug}
                     onChange={(e) => setForm({ ...form, slug: e.target.value })}
                     placeholder="ebook-completo"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all text-gray-900 placeholder:text-gray-400"
                     required
                   />
                 </div>
@@ -370,7 +370,7 @@ export default function ProdutosAdminPage() {
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     placeholder="E-book Completo"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all text-gray-900 placeholder:text-gray-400"
                     required
                   />
                 </div>
@@ -386,7 +386,7 @@ export default function ProdutosAdminPage() {
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   placeholder="Descrição do produto..."
                   rows={4}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all text-gray-900 placeholder:text-gray-400"
                 />
               </div>
 
@@ -402,7 +402,7 @@ export default function ProdutosAdminPage() {
                     value={form.price}
                     onChange={(e) => setForm({ ...form, price: e.target.value })}
                     placeholder="97.00"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all text-gray-900 placeholder:text-gray-400"
                     required
                   />
                 </div>
@@ -415,7 +415,7 @@ export default function ProdutosAdminPage() {
                   <select
                     value={form.content_type}
                     onChange={(e) => setForm({ ...form, content_type: e.target.value as any })}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all text-gray-900"
                   >
                     <option value="pdf">PDF</option>
                     <option value="video">Vídeo (YouTube)</option>
@@ -472,7 +472,7 @@ export default function ProdutosAdminPage() {
                     value={form.content_url}
                     onChange={(e) => setForm({ ...form, content_url: e.target.value })}
                     placeholder={form.content_type === 'video' ? 'https://www.youtube.com/watch?v=...' : 'https://...'}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
               )}
