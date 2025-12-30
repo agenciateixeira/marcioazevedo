@@ -28,8 +28,8 @@ WHERE trigger_name = 'on_auth_user_created';
 
 CREATE OR REPLACE FUNCTION vincular_purchases_manualmente()
 RETURNS TABLE (
-  email TEXT,
-  user_id UUID,
+  user_email_result TEXT,
+  user_id_result UUID,
   purchases_vinculadas INTEGER,
   progresso_vinculado INTEGER
 )
@@ -43,7 +43,7 @@ DECLARE
 BEGIN
   -- Para cada usuário que existe no auth.users
   FOR v_user IN
-    SELECT id, email FROM auth.users
+    SELECT u.id, u.email FROM auth.users u
   LOOP
     -- Vincular purchases
     UPDATE purchases
