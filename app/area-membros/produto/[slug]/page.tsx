@@ -113,7 +113,7 @@ export default function ProdutoPage() {
         return (
           <div className="bg-white rounded-2xl border-2 border-gray-100 overflow-hidden">
             {/* PDF Viewer */}
-            <div className="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between">
+            <div className="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
                 <BookIcon className="w-6 h-6 text-pink-600" />
                 <div>
@@ -121,26 +121,43 @@ export default function ProdutoPage() {
                   <p className="text-xs text-gray-600">Arquivo PDF</p>
                 </div>
               </div>
-              <a
-                href={product.content_url}
-                download
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded-lg transition-all text-sm"
-              >
-                <DownloadIcon className="w-4 h-4" />
-                Baixar PDF
-              </a>
+              <div className="flex gap-2">
+                <a
+                  href={product.content_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-all text-sm"
+                >
+                  Abrir em Nova Aba
+                </a>
+                <a
+                  href={product.content_url}
+                  download
+                  className="flex items-center gap-2 bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded-lg transition-all text-sm"
+                >
+                  <DownloadIcon className="w-4 h-4" />
+                  Baixar PDF
+                </a>
+              </div>
             </div>
 
             {/* PDF Embed */}
-            <div className="relative" style={{ height: '70vh' }}>
+            <div className="relative bg-gray-100" style={{ height: '70vh' }}>
               <iframe
-                src={product.content_url}
+                src={`${product.content_url}#toolbar=1&navpanes=1&scrollbar=1`}
                 className="w-full h-full"
                 title={product.name}
+                style={{ border: 'none' }}
               />
             </div>
+
+            {/* Informação adicional */}
+            {product.description && (
+              <div className="p-6 bg-gray-50 border-t border-gray-200">
+                <h4 className="font-semibold text-gray-900 mb-2">Sobre este conteúdo:</h4>
+                <p className="text-gray-700 leading-relaxed">{product.description}</p>
+              </div>
+            )}
           </div>
         )
 

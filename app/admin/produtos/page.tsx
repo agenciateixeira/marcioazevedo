@@ -88,14 +88,24 @@ export default function ProdutosAdminPage() {
       return
     }
 
+    // Validar tamanho do arquivo (50MB)
+    const maxSize = 50 * 1024 * 1024 // 50MB em bytes
+    if (file.size > maxSize) {
+      setErrorMessage(`Arquivo muito grande! Máximo: 50MB. Tamanho atual: ${(file.size / 1024 / 1024).toFixed(2)}MB`)
+      return
+    }
+
     setIsUploading(true)
     setErrorMessage('')
+    console.log(`📤 Iniciando upload de ${type}:`, file.name, `(${(file.size / 1024 / 1024).toFixed(2)}MB)`)
 
     try {
       // Gerar nome único para o arquivo
       const fileExt = file.name.split('.').pop()
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
       const filePath = type === 'content' ? `products/${fileName}` : `thumbnails/${fileName}`
+
+      console.log(`📁 Caminho do arquivo: ${filePath}`)
 
       // Upload para Supabase Storage
       const { data, error } = await supabase.storage
@@ -105,26 +115,41 @@ export default function ProdutosAdminPage() {
           upsert: false
         })
 
-      if (error) throw error
+      if (error) {
+        console.error('❌ Erro no upload do Supabase:', error)
+
+        // Mensagens de erro mais específicas
+        if (error.message.includes('not found')) {
+          throw new Error('Bucket "content" não encontrado! Você precisa criar o bucket no Supabase Storage primeiro.')
+        }
+        if (error.message.includes('policies')) {
+          throw new Error('Erro de permissão! Verifique as políticas de acesso do bucket no Supabase.')
+        }
+        throw error
+      }
+
+      console.log('✅ Upload realizado:', data)
 
       // Obter URL pública
       const { data: { publicUrl } } = supabase.storage
         .from('content')
         .getPublicUrl(filePath)
 
+      console.log('🔗 URL pública:', publicUrl)
+
       // Atualizar formulário com a URL
       if (type === 'content') {
         setForm(prev => ({ ...prev, content_url: publicUrl }))
-        setSuccessMessage('Arquivo enviado com sucesso!')
+        setSuccessMessage('✅ Arquivo enviado com sucesso! Não esqueça de SALVAR o produto.')
       } else {
         setForm(prev => ({ ...prev, thumbnail_url: publicUrl }))
-        setSuccessMessage('Thumbnail enviado com sucesso!')
+        setSuccessMessage('✅ Thumbnail enviado com sucesso! Não esqueça de SALVAR o produto.')
       }
 
-      setTimeout(() => setSuccessMessage(''), 3000)
+      setTimeout(() => setSuccessMessage(''), 5000)
     } catch (error: any) {
-      console.error('Erro no upload:', error)
-      setErrorMessage(error.message || 'Erro ao fazer upload do arquivo')
+      console.error('❌ Erro completo no upload:', error)
+      setErrorMessage(error.message || 'Erro ao fazer upload do arquivo. Verifique o console para mais detalhes.')
     } finally {
       setIsUploading(false)
     }
