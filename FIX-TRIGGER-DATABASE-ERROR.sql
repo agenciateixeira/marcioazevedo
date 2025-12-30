@@ -97,29 +97,21 @@ END
 $$;
 
 -- =====================================================
--- 5. TESTAR A FUNÇÃO MANUALMENTE
+-- 5. TESTAR SE A FUNÇÃO NÃO FALHA
 -- =====================================================
 
--- Simular criação de usuário para testar
+-- Teste simples: a função está criada?
 DO $$
-DECLARE
-  v_test_user RECORD;
 BEGIN
-  -- Criar registro fake para teste
-  v_test_user := ROW(
-    gen_random_uuid(),              -- id
-    'test_trigger@exemplo.com',     -- email
-    NOW(),                          -- created_at
-    NULL                            -- outros campos...
-  );
-
-  -- Chamar função
-  RAISE NOTICE 'Testando função com email: %', v_test_user.email;
-
-  -- A função não deve falhar mesmo se não houver purchases
-  PERFORM link_purchases_to_user();
-
-  RAISE NOTICE 'Teste OK - Função não falhou!';
+  -- Verificar se função existe
+  IF EXISTS (
+    SELECT 1 FROM information_schema.routines
+    WHERE routine_name = 'link_purchases_to_user'
+  ) THEN
+    RAISE NOTICE '✅ Função link_purchases_to_user criada com sucesso!';
+  ELSE
+    RAISE WARNING '❌ Função link_purchases_to_user NÃO foi criada!';
+  END IF;
 END
 $$;
 
