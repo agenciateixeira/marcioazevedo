@@ -140,13 +140,49 @@ export default function ProdutosAdminPage() {
       // Atualizar formulário com a URL
       if (type === 'content') {
         setForm(prev => ({ ...prev, content_url: publicUrl }))
-        setSuccessMessage('✅ Arquivo enviado com sucesso! Não esqueça de SALVAR o produto.')
       } else {
         setForm(prev => ({ ...prev, thumbnail_url: publicUrl }))
-        setSuccessMessage('✅ Thumbnail enviado com sucesso! Não esqueça de SALVAR o produto.')
       }
 
-      setTimeout(() => setSuccessMessage(''), 5000)
+      // Se estiver EDITANDO um produto existente, salvar automaticamente
+      if (editingProduct) {
+        console.log('💾 Salvando automaticamente no banco...')
+
+        const updateData: any = {}
+        if (type === 'content') {
+          updateData.content_url = publicUrl
+        } else {
+          updateData.thumbnail_url = publicUrl
+        }
+
+        const { error: updateError } = await supabase
+          .from('products')
+          .update(updateData)
+          .eq('id', editingProduct.id)
+
+        if (updateError) {
+          console.error('❌ Erro ao salvar automaticamente:', updateError)
+          setErrorMessage('Upload OK, mas erro ao salvar no banco. Clique em SALVAR manualmente.')
+        } else {
+          console.log('✅ Salvo automaticamente no banco!')
+          setSuccessMessage(type === 'content'
+            ? '✅ Arquivo enviado e salvo com sucesso!'
+            : '✅ Thumbnail enviado e salvo com sucesso!')
+
+          // Atualizar o produto editado
+          setEditingProduct(prev => prev ? { ...prev, ...updateData } : prev)
+
+          // Recarregar lista de produtos
+          loadProducts()
+        }
+      } else {
+        // Se for criação nova, avisar para salvar
+        setSuccessMessage(type === 'content'
+          ? '✅ Arquivo enviado! IMPORTANTE: Clique em SALVAR PRODUTO para finalizar.'
+          : '✅ Thumbnail enviado! IMPORTANTE: Clique em SALVAR PRODUTO para finalizar.')
+      }
+
+      setTimeout(() => setSuccessMessage(''), 7000)
     } catch (error: any) {
       console.error('❌ Erro completo no upload:', error)
       setErrorMessage(error.message || 'Erro ao fazer upload do arquivo. Verifique o console para mais detalhes.')
@@ -541,18 +577,45 @@ export default function ProdutosAdminPage() {
                 </label>
               </div>
 
+              {/* Alerta: Arquivo não salvo */}
+              {!editingProduct && (form.content_url || form.thumbnail_url) && (
+                <div className="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-4 flex items-start gap-3 animate-pulse">
+                  <AlertCircleIcon className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-bold text-yellow-900 mb-1">⚠️ Atenção: Arquivo(s) não salvo(s)!</p>
+                    <p className="text-sm text-yellow-800">
+                      Você fez upload de arquivo(s), mas ainda não clicou em <strong>"Criar Produto"</strong>.
+                      Os arquivos serão perdidos se você fechar esta tela sem salvar!
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Botões */}
               <div className="flex gap-4 pt-4">
                 <button
                   type="submit"
                   disabled={isSaving || isUploading}
-                  className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
                 >
-                  {isSaving ? 'Salvando...' : editingProduct ? 'Atualizar Produto' : 'Criar Produto'}
+                  {isSaving ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Salvando...
+                    </span>
+                  ) : editingProduct ? 'Atualizar Produto' : '💾 Criar Produto'}
                 </button>
                 <button
                   type="button"
                   onClick={() => {
+                    if ((form.content_url || form.thumbnail_url) && !editingProduct) {
+                      if (!confirm('Você fez upload de arquivo(s) que não foram salvos. Tem certeza que deseja cancelar?')) {
+                        return
+                      }
+                    }
                     setShowForm(false)
                     resetForm()
                   }}
