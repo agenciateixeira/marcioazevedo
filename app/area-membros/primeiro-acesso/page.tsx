@@ -168,7 +168,7 @@ export default function PrimeiroAcessoPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 onBlur={checkEmailPurchases}
                 placeholder="seu@email.com"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all text-gray-900 placeholder:text-gray-400"
                 disabled={isLoading}
               />
               {checkingEmail && (
@@ -193,7 +193,7 @@ export default function PrimeiroAcessoPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all text-gray-900 placeholder:text-gray-400"
                 disabled={isLoading}
               />
             </div>
@@ -209,7 +209,7 @@ export default function PrimeiroAcessoPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all text-gray-900 placeholder:text-gray-400"
                 disabled={isLoading}
               />
             </div>
