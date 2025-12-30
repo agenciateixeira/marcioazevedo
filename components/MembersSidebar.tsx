@@ -9,7 +9,8 @@ import {
   BookOpenIcon,
   UserIcon,
   LogoutIcon,
-  XIcon
+  XIcon,
+  SparklesIcon
 } from '@/components/icons'
 import { signOut } from '@/lib/auth'
 
@@ -36,6 +37,11 @@ export default function MembersSidebar({ user, userName }: MembersSidebarProps) 
       name: 'Meus Produtos',
       path: '/area-membros/dashboard',
       icon: BookOpenIcon,
+    },
+    {
+      name: 'Meu Resultado',
+      path: '/area-membros/meu-resultado',
+      icon: SparklesIcon,
     },
     {
       name: 'Meu Perfil',
