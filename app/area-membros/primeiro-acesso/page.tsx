@@ -30,16 +30,21 @@ export default function PrimeiroAcessoPage() {
 
     setCheckingEmail(true)
 
+    // Usar função RPC que bypassa RLS de forma segura
     const { data, error } = await supabase
-      .from('purchases')
-      .select('id')
-      .eq('user_email', email)
-      .eq('payment_status', 'approved')
-      .limit(1)
+      .rpc('check_email_has_purchases', { p_email: email })
 
     setCheckingEmail(false)
 
-    if (data && data.length > 0) {
+    if (error) {
+      console.error('Error checking email:', error)
+      setHasPurchases(false)
+      setError('Erro ao verificar email. Tente novamente.')
+      return
+    }
+
+    // data é um boolean: true = tem compras, false = não tem
+    if (data === true) {
       setHasPurchases(true)
       setError('')
     } else {
