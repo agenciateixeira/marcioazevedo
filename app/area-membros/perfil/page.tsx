@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { ArrowLeftIcon, UserIcon, LockIcon, HeartIcon, CheckIcon, AlertCircleIcon } from '@/components/icons'
-import { getCurrentUser, getUserPurchases, signOut } from '@/lib/auth'
+import { UserIcon, LockIcon, CheckIcon, AlertCircleIcon, HeartIcon } from '@/components/icons'
+import { getCurrentUser, getUserPurchases } from '@/lib/auth'
 import { supabase } from '@/lib/supabase'
+import MembersSidebar from '@/components/MembersSidebar'
 
 export default function PerfilPage() {
   const router = useRouter()
@@ -142,22 +143,13 @@ export default function PerfilPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <button
-            onClick={() => router.push('/area-membros/dashboard')}
-            className="flex items-center gap-2 text-gray-700 hover:text-pink-600 transition-colors"
-          >
-            <ArrowLeftIcon className="w-5 h-5" />
-            <span className="font-medium">Voltar ao Dashboard</span>
-          </button>
-        </div>
-      </div>
+    <div className="flex min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50">
+      {/* Sidebar */}
+      <MembersSidebar user={user} userName={fullName} />
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 py-8 md:py-12">
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto">
+        <div className="max-w-4xl mx-auto px-4 lg:px-8 py-8 md:py-12 lg:ml-0 ml-16">
         {/* Page Title */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -364,6 +356,7 @@ export default function PerfilPage() {
             </form>
           )}
         </motion.div>
+        </div>
       </div>
     </div>
   )

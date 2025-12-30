@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { HeartIcon, LogoutIcon, UserIcon, CheckIcon, LockIcon, PlayIcon, BookIcon, HeadphonesIcon } from '@/components/icons'
-import { getCurrentUser, getUserPurchases, signOut } from '@/lib/auth'
+import { HeartIcon, CheckIcon, LockIcon, PlayIcon, BookIcon, HeadphonesIcon } from '@/components/icons'
+import { getCurrentUser, getUserPurchases } from '@/lib/auth'
+import MembersSidebar from '@/components/MembersSidebar'
 
 interface Product {
   id: string
@@ -54,11 +55,6 @@ export default function DashboardPage() {
     setIsLoading(false)
   }
 
-  async function handleLogout() {
-    await signOut()
-    router.push('/area-membros/login')
-  }
-
   function getProductIcon(contentType: string) {
     switch (contentType) {
       case 'pdf':
@@ -99,46 +95,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            <div className="flex items-center gap-2">
-              <HeartIcon className="w-8 h-8 text-pink-500" />
-              <h1 className="text-xl md:text-2xl font-bold text-gray-900">
-                Área de Membros
-              </h1>
-            </div>
-
-            {/* User Menu */}
-            <div className="flex items-center gap-2 md:gap-4">
-              <button
-                onClick={() => router.push('/area-membros/perfil')}
-                className="flex items-center gap-2 px-3 md:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all"
-              >
-                <UserIcon className="w-5 h-5 text-gray-700" />
-                <span className="hidden sm:inline text-sm font-medium text-gray-700">
-                  Perfil
-                </span>
-              </button>
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-3 md:px-4 py-2 bg-red-50 hover:bg-red-100 rounded-xl transition-all"
-              >
-                <LogoutIcon className="w-5 h-5 text-red-600" />
-                <span className="hidden sm:inline text-sm font-medium text-red-600">
-                  Sair
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="flex min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50">
+      {/* Sidebar */}
+      <MembersSidebar user={user} />
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
+      <div className="flex-1 overflow-auto">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 md:py-12 lg:ml-0 ml-16">
         {/* Welcome */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -285,6 +248,7 @@ export default function DashboardPage() {
             </div>
           </motion.div>
         )}
+        </div>
       </div>
     </div>
   )
