@@ -10,17 +10,34 @@ export interface User {
  * Criar conta com email e senha
  */
 export async function signUp(email: string, password: string, fullName?: string) {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        full_name: fullName,
-      }
-    }
-  })
+  console.log('🔵 [auth.ts] signUp chamado para:', email)
 
-  return { user: data.user, error }
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+        }
+      }
+    })
+
+    console.log('🔵 [auth.ts] signUp resposta:', {
+      user: data.user ? { id: data.user.id, email: data.user.email } : null,
+      session: data.session ? 'exists' : 'null',
+      error: error
+    })
+
+    if (error) {
+      console.error('🔴 [auth.ts] signUp erro:', error)
+    }
+
+    return { user: data.user, error }
+  } catch (err: any) {
+    console.error('🔴 [auth.ts] signUp exception:', err)
+    return { user: null, error: err }
+  }
 }
 
 /**

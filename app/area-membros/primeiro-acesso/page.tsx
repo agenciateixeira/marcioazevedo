@@ -28,16 +28,19 @@ export default function PrimeiroAcessoPage() {
   async function checkEmailPurchases() {
     if (!email || !email.includes('@')) return
 
+    console.log('🔵 Verificando email:', email)
     setCheckingEmail(true)
 
     // Usar função RPC que bypassa RLS de forma segura
     const { data, error } = await supabase
       .rpc('check_email_has_purchases', { p_email: email })
 
+    console.log('🔵 Resposta check_email_has_purchases:', { data, error })
+
     setCheckingEmail(false)
 
     if (error) {
-      console.error('Error checking email:', error)
+      console.error('🔴 Error checking email:', error)
       setHasPurchases(false)
       setError('Erro ao verificar email. Tente novamente.')
       return
@@ -45,9 +48,11 @@ export default function PrimeiroAcessoPage() {
 
     // data é um boolean: true = tem compras, false = não tem
     if (data === true) {
+      console.log('✅ Email tem compras!')
       setHasPurchases(true)
       setError('')
     } else {
+      console.log('❌ Email NÃO tem compras')
       setHasPurchases(false)
       setError('Este email não possui compras registradas')
     }
@@ -56,6 +61,8 @@ export default function PrimeiroAcessoPage() {
   async function handleCreateAccount(e: React.FormEvent) {
     e.preventDefault()
     setError('')
+
+    console.log('🔵 Iniciando criação de conta para:', email)
 
     if (!email || !password || !confirmPassword) {
       setError('Preencha todos os campos')
@@ -79,26 +86,51 @@ export default function PrimeiroAcessoPage() {
 
     setIsLoading(true)
 
-    // Criar conta no Supabase Auth
-    const { user, error: signUpError } = await signUp(email, password)
+    try {
+      console.log('🔵 Chamando função signUp...')
 
-    if (signUpError) {
-      if (signUpError.message.includes('already registered')) {
-        setError('Este email já possui uma conta. Use a página de login.')
-      } else {
-        setError('Erro ao criar conta. Tente novamente.')
+      // Criar conta no Supabase Auth
+      const { user, error: signUpError } = await signUp(email, password)
+
+      console.log('🔵 Resposta signUp:', { user, error: signUpError })
+
+      if (signUpError) {
+        console.error('🔴 Erro ao criar conta:', signUpError)
+
+        if (signUpError.message.includes('already registered') || signUpError.message.includes('already exists')) {
+          setError('Este email já possui uma conta. Use a página de login.')
+        } else if (signUpError.message.includes('password')) {
+          setError('Senha muito fraca. Use pelo menos 8 caracteres.')
+        } else {
+          setError(`Erro ao criar conta: ${signUpError.message}`)
+        }
+        setIsLoading(false)
+        return
       }
+
+      if (!user) {
+        console.error('🔴 Usuário não foi criado (null)')
+        setError('Erro ao criar conta. Nenhum usuário retornado.')
+        setIsLoading(false)
+        return
+      }
+
+      console.log('✅ Conta criada com sucesso! User ID:', user.id)
+
+      // Conta criada com sucesso!
+      // O trigger do banco vai vincular automaticamente as purchases ao user_id
+
+      // Redirecionar para dashboard
+      setTimeout(() => {
+        console.log('🔵 Redirecionando para dashboard...')
+        router.push('/area-membros/dashboard')
+      }, 1000)
+
+    } catch (err: any) {
+      console.error('🔴 Erro inesperado ao criar conta:', err)
+      setError(`Erro inesperado: ${err.message || 'Tente novamente'}`)
       setIsLoading(false)
-      return
     }
-
-    // Conta criada com sucesso!
-    // O trigger do banco vai vincular automaticamente as purchases ao user_id
-
-    // Redirecionar para dashboard
-    setTimeout(() => {
-      router.push('/area-membros/dashboard')
-    }, 1000)
   }
 
   return (
